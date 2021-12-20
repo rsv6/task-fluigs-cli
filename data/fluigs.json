@@ -1,0 +1,17 @@
+[
+  {
+    "num_fluig": "123456",
+    "desc_fluig": "descricao 1",
+    "status": "Em aguardo"
+  },
+  {
+    "num_fluig": "324567",
+    "desc_fluig": "teste 2",
+    "status": "Em aguardo"
+  },
+  {
+    "num_fluig": "123644",
+    "desc_fluig": "teste 2",
+    "status": "Finalizado"
+  }
+]
