@@ -4,7 +4,7 @@ const fs = require('fs')
 const path = require("path")
 const { exit } = require('process')
 // const cam = path.join(__dirname,"/data/fluigs.json")
-const cam2 = "C:\\Users\\rafael.santos\\Documents\\projects\\Desktop\\NodeJS\\NoteFluigCLI\\data\\fluigs.json"
+// const cam2 = "C:\\Users\\rafael.santos\\Documents\\projects\\Desktop\\NodeJS\\NoteFluigCLI\\data\\fluigs.json"
 
 const pathOS = {
   path: {
@@ -20,21 +20,26 @@ const rl = readline.createInterface({
   output: process.stdout
 })
 
+const content = {
+  num_fluig: "",
+  desc_fluig: "",
+  status: ""
+}
+
 const questionRL = () => {
   return rl.question('Digite o numero do fluig? ', function(num_fluig){
     rl.question('Descrição do fluig? ', function(desc_fluig){
       
-      const content = {
-        num_fluig: num_fluig,
-        desc_fluig: desc_fluig,
-        status: ""
-      }
+      content.num_fluig = num_fluig
+      content.desc_fluig = desc_fluig
 
       rl.question(`Status da resolução \n
         1 - Assumido
         2 - Em aguardo
         3 - Finalizado
         \n>> `, function(status) {
+
+          // content.status = status
 
           console.log(`Status do fluig atual?
           Fluig: ${num_fluig}
@@ -43,16 +48,16 @@ const questionRL = () => {
           
           if(status == 3) {
 
-          status = "Finalizado"
-          readWrite(content, status)
+          content.status = "Finalizado"
+          readWrite(content)
         } else if(status == 2) {
           
-          status = "Em aguardo"
-          readWrite(content, status)
+          content.status = "Em aguardo"
+          readWrite(content)
         } else if(status == 1) {
           
-          status = "Assumido"
-          readWrite(content, status)
+          content.status = "Assumido"
+          readWrite(content)
         } else {
           manFluigs()
         }
@@ -62,21 +67,33 @@ const questionRL = () => {
 }
 
 
-function readWrite(content, status) {
-  fs.readFile(path.join(pathOS.path.win, pathOS.file), (err, data) => {
-    if(err) throw err
+function readWrite(content) {
+  console.log(content)
+  console.log(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file) ))
+  if (fs.existsSync(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file)))) {
+    console.log("File Exist!")
+  } else {
+    console.log("Not found file!!!")
+  }
 
-    const arq = JSON.parse(data)
-    content.status = status
-    arq.push(content)
+
+
+
+
+  // fs.readFile(path.join(pathOS.path.win, pathOS.file), (err, data) => {
+  //   if(err) throw err
+
+  //   const arq = JSON.parse(data)
+  //   content.status = status
+  //   arq.push(content)
     
-    fs.writeFile(path.join(pathOS.path.win, pathOS.file), JSON.stringify(arq, null, 2), (err) => {
-      if(err) throw err
-      console.log('The file has been saved!')
-      // rl.close()
-      manFluigs()
-    })
-  })
+  //   fs.writeFile(path.join(pathOS.path.win, pathOS.file), JSON.stringify(arq, null, 2), (err) => {
+  //     if(err) throw err
+  //     console.log('The file has been saved!')
+  //     // rl.close()
+  //     manFluigs()
+  //   })
+  // })
 }
 
 
@@ -104,7 +121,6 @@ if (os.platform() == 'win32') {
       console.log(`Directory ${pathOS.path.win+pathOS.folder} criado com sucesso!`)
 
       questionRL()
-
     })
   }
 } 
