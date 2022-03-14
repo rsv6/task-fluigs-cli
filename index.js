@@ -26,54 +26,110 @@ const content = {
   status: ""
 }
 
+const listaFluigs = () => {
+  console.log("Lista fluigs!")
+}
+
+const buscaFluig = () => {
+  return rl.question("Digite numero do fluig ou descricao para procurar: ", 
+    function(busca) {
+      console.log(`Iremos buscar por ${busca}`)
+      questionRL()
+    })
+}
+
+
 const questionRL = () => {
-  return rl.question('Digite o numero do fluig? ', function(num_fluig){
-    rl.question('Descrição do fluig? ', function(desc_fluig){
+
+  rl.question(`######### Gerenciamento de resolução de chamados de fluigs diários ##########
+  Digite a opção abaixo para executar:
+  1 - Adicionar atendimento de fluig em nota.
+  2 - Listar todos os atendimentos.
+  3 - Busca fluig.
+  0 - Sair do sistem.
+  ----> Resposta: `, function(opc) {
+
+    if (opc == 1) {
+      rl.question('Digite o numero do fluig? Ou "0" para finalizar! ', function(num_fluig){
+        if (num_fluig != 0) {
+          rl.question('Descrição do fluig? ', function(desc_fluig){
+    
+            content.num_fluig = num_fluig
+            content.desc_fluig = desc_fluig
       
-      content.num_fluig = num_fluig
-      content.desc_fluig = desc_fluig
-
-      rl.question(`Status da resolução \n
-        1 - Assumido
-        2 - Em aguardo
-        3 - Finalizado
-        \n>> `, function(status) {
-
-          // content.status = status
-
-          console.log(`Status do fluig atual?
-          Fluig: ${num_fluig}
-          Descrição: ${desc_fluig}
-          Status: ${status}`)
-          
-          if(status == 3) {
-
-          content.status = "Finalizado"
-          readWrite(content)
-        } else if(status == 2) {
-          
-          content.status = "Em aguardo"
-          readWrite(content)
-        } else if(status == 1) {
-          
-          content.status = "Assumido"
-          readWrite(content)
+            rl.question(`Status da resolução \n
+              1 - Assumido
+              2 - Em aguardo
+              3 - Finalizado
+              \n>> `, function(status) {
+      
+                // content.status = status
+      
+                console.log(`Status do fluig atual?
+                Fluig: ${num_fluig}
+                Descrição: ${desc_fluig}
+                Status: ${status}`)
+                
+                if(status == 3) {
+      
+                content.status = "Finalizado"
+                writeFile(content)
+                questionRL()
+              } else if(status == 2) {
+                
+                content.status = "Em aguardo"
+                writeFile(content)
+                questionRL()
+              } else if(status == 1) {
+                
+                content.status = "Assumido"
+                writeFile(content)
+                questionRL()
+              } else {
+                questionRL()
+              }
+            })
+          })
         } else {
-          manFluigs()
+          console.log('System ended!')
+          exit()
         }
       })
-    })
+    } else if (opc == 2) {
+      listaFluigs()
+      questionRL()
+    } else if (opc == 3) {
+      buscaFluig()
+    } else if (opc == 0) {
+      console.log('System ended!')
+      exit()
+    } else {
+      console.log("Opção invalida!!!")
+    }
   })
 }
 
 
-function readWrite(content) {
+function writeFile(content) {
   console.log(content)
-  console.log(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file) ))
+  // console.log(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file) ))
+
   if (fs.existsSync(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file)))) {
+    const data = fs.readFileSync(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file)))
+    const fluigs = JSON.parse(data)
+    const obj = []
+    obj.push(...fluigs, content)
+
+    console.log(obj)
+
+    const result = fs.writeFileSync(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file)), JSON.stringify(obj, null, 2))
+
+    console.log(result)
     console.log("File Exist!")
   } else {
     console.log("Not found file!!!")
+    const result = fs.appendFileSync(path.join(pathOS.path.win, pathOS.folder.concat('\\', pathOS.file)), JSON.stringify([content], null, 2))
+    console.log(result)
   }
 
 
